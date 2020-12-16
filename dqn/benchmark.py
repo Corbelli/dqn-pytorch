@@ -59,9 +59,9 @@ class Benchmarks():
                 fig.add_trace(go.Scatter(y=scores, name=name, showlegend=True, line_color=COLORS[i]))
             else:
                 fig.add_trace(go.Scatter(y=scores, name=name, opacity=opacity,
-                                         showlegend=True, line_color=COLORS[i]))
+                                         showlegend=False, line_color=COLORS[i]))
                 means = calc_rollling_mean(scores, mean)
-                fig.add_trace(go.Scatter(y=means, showlegend=False, line_color=COLORS[i]))
+                fig.add_trace(go.Scatter(y=means, name=name, showlegend=True, line_color=COLORS[i]))
         fig.update_layout(title=title,
                     xaxis_title='# Episode', yaxis_title='Episode Reward')
         fig.show()
