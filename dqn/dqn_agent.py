@@ -47,6 +47,9 @@ class DQNAgent():
     def load_weights(self, model_weights):
         self.qnetwork_local.load_state_dict(torch.load('models/{}'.format(model_weights)))
     
+    def save_weights(self, model_weights):
+        torch.save(self.qnetwork_local.state_dict(), 'models/{}'.format(model_weights))
+
     def step(self, state, action, reward, next_state, done):
         # Save experience in replay memory
         if self.random:
@@ -81,6 +84,7 @@ class DQNAgent():
             return np.argmax(action_values.cpu().data.numpy())
         else:
             return random.choice(np.arange(self.action_size))
+
 
     def learn(self, experiences, gamma):
         """Update value parameters using given batch of experience tuples.
