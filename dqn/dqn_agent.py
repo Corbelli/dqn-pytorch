@@ -2,7 +2,7 @@ import numpy as np
 import random
 from collections import namedtuple, deque
 
-from model import DuellingQNetwork
+from .dqn_model import QNetwork
 
 import torch
 import torch.nn.functional as F
@@ -17,7 +17,7 @@ UPDATE_EVERY = 4        # how often to update the network
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-class Agent():
+class DQNAgent():
     """Interacts with and learns from the environment."""
 
     def __init__(self, state_size, action_size, seed, random_policy=False):
@@ -35,14 +35,17 @@ class Agent():
         self.seed = random.seed(seed)
 
         # Q-Network
-        self.qnetwork_local = DuellingQNetwork(state_size, action_size, seed).to(device)
-        self.qnetwork_target = DuellingQNetwork(state_size, action_size, seed).to(device)
+        self.qnetwork_local = QNetwork(state_size, action_size, seed).to(device)
+        self.qnetwork_target = QNetwork(state_size, action_size, seed).to(device)
         self.optimizer = optim.Adam(self.qnetwork_local.parameters(), lr=LR)
 
         # Replay memory
         self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, seed)
         # Initialize time step (for updating every UPDATE_EVERY steps)
         self.t_step = 0
+
+    def load_weights(self, model_weights):
+        self.qnetwork_local.load_state_dict(torch.load('models/{}'.format(model_weights)))
     
     def step(self, state, action, reward, next_state, done):
         # Save experience in replay memory
@@ -67,7 +70,6 @@ class Agent():
             eps (float): epsilon, for epsilon-greedy action selection
         """
         if self.random:
-            return random.choice([2])
             return random.choice(np.arange(self.action_size))
         state = torch.from_numpy(state).float().unsqueeze(0).to(device)
         self.qnetwork_local.eval()
@@ -89,8 +91,6 @@ class Agent():
             gamma (float): discount factor
         """
         states, actions, rewards, next_states, dones = experiences
-
-        ## TODO: compute and minimize the loss
         "*** YOUR CODE HERE ***"
         # current_qs = self.qnetwork_local(states).gather(1, actions)
         # next_actions = self.qnetwork_local(next_states).detach().max(1)[1]
