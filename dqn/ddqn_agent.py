@@ -96,7 +96,7 @@ class DDQNAgent():
         """
         states, actions, rewards, next_states, dones = experiences
         current_qs = self.qnetwork_local(states).gather(1, actions)
-        next_actions = self.qnetwork_local(next_states).detach().max(1)[1]
+        next_actions = self.qnetwork_local(next_states).detach().max(1)[1].unsqueeze(1)
         max_next_qs = self.qnetwork_target(next_states).detach().gather(1, next_actions)
         target_qs = rewards + GAMMA*max_next_qs
         loss = F.smooth_l1_loss(current_qs, target_qs)
