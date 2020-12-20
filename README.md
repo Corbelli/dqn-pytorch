@@ -52,7 +52,9 @@ The environment consists of a robot surround by a boxed enclosure filled with ye
 - `2` - turn left
 - `3` - turn right
 
-The state-space has `37` dimensions and contains the agent's velocity, along with ray-based perception of objects around agent's forward direction.  A reward of `+1` is provided for collecting a yellow banana, and a reward of `-1` is provided for collecting a blue banana. 
+The state-space has `37` dimensions and contains the agent's velocity, along with ray-based perception of objects around agent's forward direction.  A reward of `+1` is provided for collecting a yellow banana, and a reward of `-1` is provided for collecting a blue banana.
+
+The environment is considered solved when an average score above 13.0 is obtained for the last 100 episodes.
 
 # Training and Playing
 
@@ -145,30 +147,47 @@ Each model module is organized as
 
 For a description of the implementation of the most complex variant, see the [Report file](./Report.md).
 
-The available models and corresponding classes are:
+Training using the other implemented models is very similar to the instructions in the [Training and Playing](#training-and-playing). The available models, corresponding classes and code examples are listed bellow
 
 * Nature DQN \
     The original DQN proposed
     ```python
-        from dqn.nature import DQNAgent, NatureTraining
+    from dqn.nature import DQNAgent, NatureTraining
+
+    agent = DQNAgent(state_size=37, action_size=4, seed=0)
+    training_setup = NatureTraining(n_episodes=2000, eps_start=1, eps_end=0.01, eps_decay=0.995)
+    scores = training_setup.train(agent, env, brain_name, track_every=10, plot=True, weights='dqn.pth', success_thresh=13.0)
+ 
     ```
 
 * Double DQN \
     DQN with modification to implement double q learning
     ```python
-        from dqn.double import DDQNAgent, DDQNAgent
+    from dqn.double import DDQNAgent, DoubleTraining
+
+    agent = DDQNAgent(state_size=37, action_size=4, seed=0)
+    training_setup = DoubleTraining(n_episodes=2000, eps_start=1, eps_end=0.01, eps_decay=0.995)
+    scores = training_setup.train(agent, env, brain_name, track_every=10, plot=True, weights='ddqn.pth', success_thresh=13.0)
     ```
 
 * Duelling DQN \
     DQN with modification to implement double q learning and a dueling network architecture
     ```python
-        from dqn.duelling import DDDQNAgent, DuelTraining
+    from dqn.duelling import DDDQNAgent, DuelTraining
+
+    agent = DDDQNAgent(state_size=37, action_size=4, seed=0)
+    training_setup = DuelTraining(n_episodes=2000, eps_start=1, eps_end=0.01, eps_decay=0.995)
+    scores = training_setup.train(agent, env, brain_name, track_every=10, plot=True, weights='dddqn.pth', success_thresh=13.0)
     ```
 
 * Prioritized Replay \
     DQN with modification to implement double q learning, a dueling network architecture, and Prioritized replay
     ```python
-        from dqn.prioritized import PriorAgent, PTraining
+    from dqn.prioritized import PriorAgent, PTraining
+
+    agent = PriorAgent(state_size=37, action_size=4, seed=0)
+    training_setup = PTraining(n_episodes=2000, eps_start=1, eps_end=0.01, eps_decay=0.995, beta_start=0.4, beta_inc=1.002)
+    scores = training_setup.train(agent, env, brain_name, track_every=10, plot=True, weights='priordqn.pth', success_thresh=13.0)
     ```
 
 # Benchmarks
