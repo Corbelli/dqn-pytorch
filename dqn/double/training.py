@@ -72,7 +72,7 @@ class DoubleTraining():
             if train:
                 agent.step(state, action, reward, next_state, done)
             else:
-                time.sleep(0.045)
+                time.sleep(0.055)
             score += reward
             state = next_state
             if done:

@@ -23,7 +23,7 @@ Although the code can be used in any operating system, the compiled versions of 
 
 # Dependencies
 
-1. It is recommended to use miniconda to manage python environments. In order to install the dependencies the initial step would be:
+1. It is recommended to use mini-conda to manage python environments. In order to install the dependencies the initial step would be:
 
 ```bash
 	conda create --name dqn-pytorch python=3.6
@@ -99,7 +99,7 @@ from dqn import  Benchmarks
 benchs = Benchmarks()
 benchs.save_score('Final Prioritized Replay', scores, 'Prioritized replay implementation, with duelling model and Double DQN, the impletation trained for 2000 episodes'))
 ```
-To check all available saved trainings, check the [Results](#results) section. To see a trained model play, just load the weights for the agent with the load_weights function, and use the play function of the training class.
+To check all available saved trainings, check the [Results](#benchmarks) section. To see a trained model play, just load the weights for the agent with the load_weights function, and use the play function of the training class.
 
 ```python
 agent = PriorAgent(state_size=37, action_size=4, seed=0)
@@ -118,6 +118,8 @@ The folder system in the code is structured as:
 * models - Saved weights of the trained models
 
 * images - Saved images of results
+
+* Tutorial.ipynb - Jupyter Notebook with code samples
 
 # DQN library
 
@@ -162,7 +164,7 @@ The available models and corresponding classes are:
         from dqn.prioritized import PriorAgent, PTraining
     ```
 
-# Results
+# Benchmarks
 
 The 4 models implemented have trained versions saved in the models folder. Those models are named as:
 
@@ -171,17 +173,40 @@ The 4 models implemented have trained versions saved in the models folder. Those
 * Duelling Double DQN -> dddqn.pth
 * Prioritezed Replay DQN -> priordqn.pth
 * Prioritezed Replay trained through 2000 steps -> final.pth
+* Untraind Prioritized Replay DQN -> untrained.pth
 
-To load a model, it is necessary to instantiate the corresponding class and then load the weights. Below is an example to load the Prioritized Replay model trained through 2000 steps.
+
+Also, the scores for every training along with a description of the model used are saved in the benchmarks folder. The available scores are:
+
+* DQN - Nature DQN training
+* DDQN - Double Q learning DQN training
+* DDDQN - Dueling Network with Double Q 
+learning DQN training
+* Prioritized Replay - Prioritized Replay (with double q learning and dueling architecture)
+* Final Prioritized Replay - Prioritized architecture trained through 2000 step
+* random - Performance of a random agent
+
+To load a specific model, just use the function load_bench from the Benchmarks class. The load class receives the name of the saved scores. To plot the scores, use the plot_bench function. This function receives the scores vector, the title of the plot 
 
 ```python
-from dqn import PriorAgent, PTraining, Benchmarks
-
-agent = PriorAgent(state_size=37, action_size=4, seed=0)
-agent.load_weights('final.pth')
+scores = benchs.load('DQN')
+bench_dict = benchs.plot_bench(scores, title='Example of Loading Score', mean=100, opacity=0.5)
 ```
 
-For further details of implementation and the results of training, please refer to the Report file [here](./Report.md).
+![Example Score Loading](./images/example_score_loading.png)
+
+The plot function receives the scores vector, the title of the plot, the number of runs to use in the moving mean calculation (or None for not displaying the mean) and the opacity to use for the plotting of the scores. 
+
+To see a comparison of all the trainings, you can load a dictionary of { 'model name': [scores vector] } with the load_benchmarks function. To plot the dictionary, use the plot_benchs function
+
+```python
+bench_dict = benchs.load_benchmarks()
+benchs.plot_benchs(bench_dict, title='Models Comparison', mean=100, opacity=0.1)
+```
+
+![Model Comparison](./images/models_comparison.png)
+
+For further details of the implementation of the reinforcement learning agent, the Prioritized Replay model architecture is describe with details in the [Report file](./Report.md).
 
 # References
 

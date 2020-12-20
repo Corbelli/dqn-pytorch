@@ -76,7 +76,7 @@ class PTraining():
             if train:
                 agent.step(state, action, reward, next_state, done, self.beta)
             else:
-                time.sleep(0.045)
+                time.sleep(0.065)
             score += reward
             state = next_state
             if done:
