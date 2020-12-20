@@ -2,9 +2,9 @@
 
 This report describes the implementation present here of a DQN agent with Double Q Learning, Duelling Network Architecture and Prioritized Experience Replay.
 
-## Neural Network Model
+# The Neural Network Model
 
-The Neural Network Model is implemented in Pytorch, the code is simple and contains only two parts. First, the model is defined. The architecture used consisted of 2 hidden layers, one with 128 and the other with 256 neurons, followed by the two duelling regression heads. One to compute the state values and the other to compute the advantages
+The Neural Network Model is implemented in Pytorch, the code is simple and contains only two parts. First, the model is defined. The architecture used consisted of 2 hidden layers, one with 128 and the other with 256 neurons, followed by the two dueling regression heads. One to compute the state values and the other to compute the advantages
 
 ```python
     def __init__(self, state_size, action_size, seed):
@@ -16,7 +16,7 @@ The Neural Network Model is implemented in Pytorch, the code is simple and conta
         self.head_advantages = nn.Linear(256, action_size)
 ```
 
- The second part is simply the foward pass, where each regression head is computed, and both are combined by the method described in [paper]
+ The second part is simply the forward pass, where each regression head is computed, and both are combined by the method described in [paper]
 
 ```python
     def forward(self, state):
@@ -27,9 +27,9 @@ The Neural Network Model is implemented in Pytorch, the code is simple and conta
         return values + (advantages - advantages.mean()
 ```
 
-## The Agent
+# The Agent
 
-The agent is implemented in a python class. It receives two instances of the Neural Network defined above, one to compute the target Q-values, and one to estimate the current beliefs. The agent also receives a implementation of the ReplayBuffer class to manage the experience buffer.
+The agent is implemented in a python class. It receives two instances of the Neural Network defined above, one to compute the target Q-values, and one to estimate the current beliefs. The agent also receives an implementation of the ReplayBuffer class to manage the experience buffer.
 
 ```python
     self.qnetwork_local = DuelQNetwork(state_size, action_size, seed).to(device)
@@ -39,7 +39,7 @@ The agent is implemented in a python class. It receives two instances of the Neu
     self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, seed)
 ```
 
-The agent interacts with the enviroment, acting in a epsilon greedy policy according to the act function 
+The agent interacts with the environment, acting in an epsilon greedy policy according to the act function 
 
 ```python
     state = torch.from_numpy(state).float().unsqueeze(0).to(device)
@@ -54,7 +54,7 @@ The agent interacts with the enviroment, acting in a epsilon greedy policy accor
             return random.choice(np.arange(self.action_size))
 ```
 
-Every time the agent acts, it saves the experience in the replay buffer, to learn afterwards after a fixed number of actions (the UPDATE_EVERY variable)
+Every time the agent acts, it saves the experience in the replay buffer, to learn afterward after a fixed number of actions (the UPDATE_EVERY variable)
 
 ```python
   self.memory.add(state, action, reward, next_state, done)
@@ -68,7 +68,7 @@ Every time the agent acts, it saves the experience in the replay buffer, to lear
                 self.learn(experiences, GAMMA, beta)
 ```
 
-The buffer class has two main structures, one to save the experiences and another to keep the experiences priorities
+The buffer class has two main structures, one to save the experiences and another to keep the priorities of the experience
 
 ```python
     self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done"])
@@ -89,7 +89,7 @@ When the experiences are saved, the priorities array is also updated to match th
             self.priorities[max(len(self.memory) - 1,0)] = self.max_priorit
 ```
 
-At sample time, the priorities are converted to sample probabilites. Instead of sampling the experiences directly, the indices are sampled, so they can be remembered to update the sampled priorities afterwards.
+At sample time, the priorities are converted to sample probabilities. Instead of sampling the experiences directly, the indices are sampled, so they can be remembered to update the sampled priorities afterward.
 
 ```python
         probabilities = self.probs(self.priorities)[:len(self.memory)]
@@ -97,7 +97,7 @@ At sample time, the priorities are converted to sample probabilites. Instead of 
         experiences = [self.memory[idx] for idx in experiences_idx]
 ```
 
-The traininig of the agent with the sample experiences can be divided in three steps. First, the targets are computed in a double q-learning setup.
+The training of the agent with the sample experiences can be divided in three steps. First, the targets are computed in a double q-learning setup.
 
 ```python
         current_qs = self.qnetwork_local(states).gather(1, actions)
@@ -106,7 +106,7 @@ The traininig of the agent with the sample experiences can be divided in three s
         target_qs = rewards + GAMMA*max_next_qs
 ```
 
-Then, the importance sampling weights to compesate the prioritezed sampling are calculated and used to multply the loss (and, consequently, the error gradients)
+Then, the importance sampling weights to compensate the prioritized sampling are calculated and used to multiply the loss (and, consequently, the error gradients)
 
 ```python
     is_weights = np.power(probabilites*BATCH_SIZE, -beta)
@@ -115,7 +115,7 @@ Then, the importance sampling weights to compesate the prioritezed sampling are 
     loss = loss.mean(
 ```
 
-Finally, the td-errors are updated, and the models weights are updated. 
+Finally, the temporal difference errors are updated, and the model weights are updated. 
 
 ```python
     td_errors = (target_qs - current_qs).detach().numpy()
@@ -126,7 +126,7 @@ Finally, the td-errors are updated, and the models weights are updated.
     self.optimizer.step()
 ```
 
-At every learning step, the target network is updated with the local network weight. But the update is made in a soft manner, moving the target_network weights only sligthy in the local_network direction.
+At every learning step, the target network is updated with the local network weight. But the update is made in a soft manner, moving the target_network weights only slightly in the local_network direction.
 
 ```python
     def soft_update(self, local_model, target_model, tau):
@@ -145,7 +145,7 @@ At every learning step, the target network is updated with the local network wei
 
 This ends the overview of the implementation of the code.
 
-## Training
+# Training
 
 Training is implemented by the training class. The values used to the fixed hyperparameters are defined in the prior_agent file, and were:
 
@@ -160,7 +160,7 @@ UPDATE_EVERY = 4        # how often to update the network
 ALPHA = 0.6             # constant to smooth the samping distribution
 ```
 
-Besides the fixed parameters, a strategy for the epsilon for the epsilon-greedy strategy and the beta for the importance sampling weights correction should be defined. Those two are determined by a initial value, a multipling constant, and a final value. The update steps are defined as:
+Besides the fixed parameters, a strategy for the epsilon for the epsilon-greedy strategy and the beta for the importance sampling weights correction should be defined. Those two are determined by an initial value, a multiplying constant, and a final value (in the case of the beta parameter, the final value is implicitly set to 1). The update steps are defined as:
 
 ```python
     def __update_params(self):
@@ -168,33 +168,28 @@ Besides the fixed parameters, a strategy for the epsilon for the epsilon-greedy 
         self.beta = min(1.0, self.beta_inc*self.beta)
 ```
 
-The values used, and how to run the code, are given by:
+The values used for the trained models where:
 
-```python
-from dqn import PriorAgent, PTraining
-
-agent = PriorAgent(state_size=37, action_size=4, seed=0)
-training_setup = PTraining(n_episodes=2000, eps_start=1, eps_end=0.01, eps_decay=0.995, beta_start=0.4, beta_inc=1.002)
-scores = training_setup.train(agent, env, brain_name, track_every=2, plot=True, weights='final.pth',success_thresh=20.)
-```
+* epsilon -> eps_start = 1, eps_decay = .995, eps_end = 0.01
+* beta -> beta_start = 0.4, beta_inc = 1.002
 
 
-## Performance
+# Performance
 
-The algorithm was trained in two setups. First, it trained until a average score > 13.0 had been obtained for the last 100 episodes. 
+The algorithm was trained in two setups. First, it trained until an average score > 13.0 had been obtained for the last 100 episodes. 
 
 ![The training of the model completed after 545 steps](images/PrioritizedTerminated.png "Training of the DQN at the unity environment")
 
-Afterwards, the same model was allowed to run during 2000 steps without interruption.
+Afterward, the same model was allowed to run for 2000 steps without interruption.
 
 
 ![Training with and without termination ](images/termination_comparison.png "Training with and without termination")
 
 The training during 2000 steps revealed that the model could further improve on the results achieved previously, elevating the average score to 15.7. After some more steps, though, the model could not improve on the results already achieved
 
-## Future works idea
+# Future works idea
 
-Besides the improvements implemented here, there are a number of other modifications that can be made to achieve state-of-the-art performance. A next step would be to implement distribucional Q-learning, noisy exploration networks, and multiple steps updates. Those modifications would lead the Agent to be a Rainbow model of DQN. Moving even further, one could change the distribution implementation of the Rainbow architecture to a more efficient technique, such as quantile regression.
+Besides the improvements implemented here, there are a number of other modifications that can be made to achieve state-of-the-art performance. A next step would be to implement distributional Q-learning, noisy exploration networks, and multiple steps updates. Those modifications would lead the Agent to be a Rainbow model of DQN. Moving even further, one could change the distribution implementation of the Rainbow architecture to a more efficient technique, such as quantile regression.
 
 
 
