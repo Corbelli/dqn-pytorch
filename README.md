@@ -174,23 +174,23 @@ The available models and corresponding classes are:
 
 The 4 models implemented have trained versions saved in the models folder. Those models are named as:
 
-* Nature DQN -> dqn.pth
-* Double DQN -> ddqn.pth
-* Duelling Double DQN -> dddqn.pth
-* Prioritezed Replay DQN -> priordqn.pth
+* Nature DQN [[1]](#references) -> dqn.pth
+* Double DQN [[2]](#references) -> ddqn.pth
+* Duelling Double DQN [[3]](#references) -> dddqn.pth
+* Prioritezed Replay DQN [[4]](#references) -> priordqn.pth
 * Prioritezed Replay trained through 2000 steps -> final.pth
 * Untraind Prioritized Replay DQN -> untrained.pth
 
 
 Also, the scores for every training along with a description of the model used are saved in the benchmarks folder. The available scores are:
 
-* DQN - Nature DQN training
-* DDQN - Double Q learning DQN training
-* DDDQN - Dueling Network with Double Q 
+* DQN -> Nature DQN training
+* DDQN -> Double Q learning DQN training
+* DDDQN -> Dueling Network with Double Q 
 learning DQN training
-* Prioritized Replay - Prioritized Replay (with double q learning and dueling architecture)
+* Prioritized Replay -> Prioritized Replay (with double q learning and dueling architecture)
 * Final Prioritized Replay - Prioritized architecture trained through 2000 step
-* random - Performance of a random agent
+* random -> Performance of a random agent
 
 To load a specific model, just use the function load_bench from the Benchmarks class. The load class receives the name of the saved scores. To plot the scores, use the plot_bench function. This function receives the scores vector, the title of the plot 
 
