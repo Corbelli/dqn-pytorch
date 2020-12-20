@@ -23,7 +23,7 @@ Although the code can be used in any operating system, the compiled versions of 
 
 # Dependencies
 
-1. It is recommended to use mini-conda to manage python environments. In order to install the dependencies the initial step would be:
+1. It is recommended to use miniconda to manage python environments. In order to install the dependencies the initial step would be:
 
 ```bash
 	conda create --name dqn-pytorch python=3.6
@@ -56,7 +56,7 @@ The state-space has `37` dimensions and contains the agent's velocity, along wit
 
 # Training and Playing
 
-To get started with the code, the first step is to load the Unity-ML agents environment. It is important to note
+To get started with the code, the first step is to load the Unity-ML agent's environment. It is important to note that the path must be adjusted to the location of the environment file in your system. The environment is organized around brains that represent each controllable agent. In the banana environment, it suffices to use the first brain. The initial code would be:
 
 ```python
 from unityagents import UnityEnvironment
@@ -66,13 +66,45 @@ brain_name = env.brain_names[0]
 brain = env.brains[brain_name]
 ```
 
+The next step is to load one of the implemented agents and corresponding training class. For the banana environment, the state size must be 37, and action size 4. The training setup must include the number of episodes, and the values for the epsilon and beta parameters evolution. An example with the values used in the trained models and the Prioritized Replay model is:
 
 ```python
 from dqn import PriorAgent, PTraining
 
 agent = PriorAgent(state_size=37, action_size=4, seed=0)
 training_setup = PTraining(n_episodes=2000, eps_start=1, eps_end=0.01, eps_decay=0.995, beta_start=0.4, beta_inc=1.002)
-scores = training_setup.train(agent, env, brain_name, track_every=2, plot=True, weights='final.pth',success_thresh=20.)
+```
+
+To train the agent and get the scores during training, use the train function of the training class. The class receives:
+
+* the agent 
+* the environment, 
+* the brain name
+* track_every - the number of steps between the tracking of the training
+* plot - wether or not the tracking is visual (with an evolution plot) or only informative (with prints)
+* success_thresh - The threshold for the moving average of the last 100 runs. When it is conquered, the training stops and the weights are saved in the models folder
+* weights - The name of the weights file where the model will be saved
+
+An example of the code is:
+
+```python
+scores = training_setup.train(agent, env, brain_name, track_every=2, plot=True, weights='final.pth',success_thresh=13.)
+```
+
+Once the scores is saved, you can save the training with a name and description using the Benchmark class. To do so, just do as the code bellow.
+
+```python
+from dqn import  Benchmarks
+
+benchs = Benchmarks()
+benchs.save_score('Final Prioritized Replay', scores, 'Prioritized replay implementation, with duelling model and Double DQN, the impletation trained for 2000 episodes'))
+```
+To check all available saved trainings, check the [Results](#results) section. To see a trained model play, just load the weights for the agent with the load_weights function, and use the play function of the training class.
+
+```python
+agent = PriorAgent(state_size=37, action_size=4, seed=0)
+agent.load_weights('final.pth')
+scores = PTraining().play(agent, env, brain_name)
 ```
 
 # Code base
@@ -89,7 +121,7 @@ The folder system in the code is structured as:
 
 # DQN library
 
-The DQN libray is organized in classes as follows
+The DQN library is organized in classes as follows
 
 * Model Modules - Modules to train and use each one of the implementations
 * Benchmarks - Class to load and display the saved training scores

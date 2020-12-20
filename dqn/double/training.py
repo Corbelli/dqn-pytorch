@@ -24,6 +24,17 @@ class DoubleTraining():
 
     def train(self, agent, env, brain_name, success_thresh=13.0,
               track_every=100, plot=False, weights='checkpoint.pth'):
+        """Train the agents in the provided environment
+        Params
+        ======
+            agent (class): Class of the reinforcement learning agent
+            env (class): Class of the Unity-ML environment
+            brain_name (str): Name of the brain controlled by the agent
+            success_thresh (float): The target score for the running mean
+            track_every (int): The frequency of the tracking of the training
+            plot (bool): Wether the tracking will be visual or not
+            weights (str): The name of the file where the weights of the model will be saved if the success_tresh is achieved
+        """
         self.brain_name = brain_name
         scores = []
         rolling = []

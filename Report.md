@@ -112,7 +112,7 @@ Then, the importance sampling weights to compensate the prioritized sampling are
     is_weights = np.power(probabilites*BATCH_SIZE, -beta)
     is_weights = torch.from_numpy(is_weights/np.max(is_weights)).float().to(device)
     loss = (target_qs - current_qs).pow(2) * is_weights
-    loss = loss.mean(
+    loss = loss.mean()
 ```
 
 Finally, the temporal difference errors are updated, and the model weights are updated. 
