@@ -187,7 +187,7 @@ Afterward, the same model was allowed to run for 2000 steps without interruption
 
 The training during 2000 steps revealed that the model could further improve on the results achieved previously, elevating the average score to 15.7. After some more steps, though, the model could not improve on the results already achieved
 
-# Future works idea
+# Future Work Ideas
 
 Besides the improvements implemented here, there are a number of other modifications that can be made to achieve state-of-the-art performance. A next step would be to implement distributional Q-learning, noisy exploration networks, and multiple steps updates. Those modifications would lead the Agent to be a Rainbow model of DQN. Moving even further, one could change the distribution implementation of the Rainbow architecture to a more efficient technique, such as quantile regression.
 

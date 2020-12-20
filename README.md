@@ -75,7 +75,13 @@ agent = PriorAgent(state_size=37, action_size=4, seed=0)
 training_setup = PTraining(n_episodes=2000, eps_start=1, eps_end=0.01, eps_decay=0.995, beta_start=0.4, beta_inc=1.002)
 ```
 
-To train the agent and get the scores during training, use the train function of the training class. The class receives:
+To train the agent and get the scores during training, use the train function of the training class. 
+
+```python
+scores = training_setup.train(agent, env, brain_name, track_every=2, plot=True, weights='final.pth',success_thresh=13.)
+```
+
+The class receives as inputs:
 
 * the agent 
 * the environment, 
@@ -85,11 +91,6 @@ To train the agent and get the scores during training, use the train function of
 * success_thresh - The threshold for the moving average of the last 100 runs. When it is conquered, the training stops and the weights are saved in the models folder
 * weights - The name of the weights file where the model will be saved
 
-An example of the code is:
-
-```python
-scores = training_setup.train(agent, env, brain_name, track_every=2, plot=True, weights='final.pth',success_thresh=13.)
-```
 
 Once the scores is saved, you can save the training with a name and description using the Benchmark class. To do so, just do as the code bellow.
 
@@ -99,7 +100,7 @@ from dqn import  Benchmarks
 benchs = Benchmarks()
 benchs.save_score('Final Prioritized Replay', scores, 'Prioritized replay implementation, with duelling model and Double DQN, the impletation trained for 2000 episodes'))
 ```
-To check all available saved trainings, check the [Results](#benchmarks) section. To see a trained model play, just load the weights for the agent with the load_weights function, and use the play function of the training class.
+To check all available saved trainings, check the [Benchmarks](#benchmarks) section. To see a trained model play, just load the weights for the agent with the load_weights function, and use the play function of the training class.
 
 ```python
 agent = PriorAgent(state_size=37, action_size=4, seed=0)
@@ -142,7 +143,7 @@ Each model module is organized as
 
 * Training - Convenience  class to handle training and tracking of the agent 
 
-For a description of the implementation of the most complex variant, see the Report document.
+For a description of the implementation of the most complex variant, see the [Report file](./Report.md).
 
 The available models and corresponding classes are:
 
