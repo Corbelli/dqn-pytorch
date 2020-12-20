@@ -107,6 +107,12 @@ agent.load_weights('final.pth')
 scores = PTraining().play(agent, env, brain_name)
 ```
 
+Below is a comparison with the Prioritized Replay model, of an untrained agent, with an agent trained for 2000 steps. Check how the trained model is able to search for yellow bananas while avoiding blue ones
+
+![](images/untrained.gif)  |  ![](images/trained.gif)
+-------------------------|-------------------------
+Untrained Model          |  Trained Model
+
 # Code base
 
 The folder system in the code is structured as:
