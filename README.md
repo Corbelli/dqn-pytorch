@@ -238,7 +238,7 @@ For further details of the implementation of the reinforcement learning agent, t
 
 
  
-[1] [Deep Reinforcement Learning with Double Q-learning](http://arxiv.org/abs/1509.06461)
+[1] [Deep Q Learning Nature Paper](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf)
 
 [2] [Deep Reinforcement Learning with Double Q-learning](https://arxiv.org/abs/1509.06461)
 
