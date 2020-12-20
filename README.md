@@ -2,7 +2,7 @@
 
 This project is a Pytorch implementation of several variants of the Deep Q Learning (DQN) model. It is based on the material provided by Udacity's Deep Reinforcement Learning Nanodegree. The objective is to use one of the Unity ML-Agents libraries to demonstrate how different DQN implementations can be coded, trained and evaluation. 
 
-![Banana Game Screen Shot](./images/banana_game.png)
+![Banana Game Screen Shot](./images/trained.gif)
 
 # Sumary
 
