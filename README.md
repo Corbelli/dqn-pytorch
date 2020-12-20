@@ -2,9 +2,22 @@
 
 This project is a Pytorch implementation of several variants of the Deep Q Learning (DQN) model. It is based on the material provided by Udacity's Deep Reinforcement Learning Nanodegree. The objective is to use one of the Unity ML-Agents libraries to demonstrate how different DQN implementations can be coded, trained and evaluation. 
 
-The code structure builds from the Nature DQN, and incrementally implements 3 modifications, in order: Double Q Learning, Duelling Networks and Prioritized Experience Replay.
+![Banana Game Screen Shot](./images/banana_game.png)
 
-Although the code can be used in any operating system, the compiled versions of the Unity ML-Agents environment used are only available to MAC (with graphics) and Linux (headless version, for faster training). If you are a windows user, please feel free to use the code structure on other compiled environments, or use this code in a cloud environment on a Linux machine.
+# Sumary
+
+The code structure builds from the Nature DQN, and incrementally implements 3 modifications, in order: Double Q Learning, Duelling Networks and Prioritized Experience Replay. The articles for each one of these implementations can be found at
+
+- DQN [[1]](#references)
+- Double DQN [[2]](#references)
+- Dueling Network Architecture [[3]](#references)
+- Prioritised Experience Replay [[4]](#references)
+
+Although the code can be used in any operating system, the compiled versions of the Unity ML-Agents environment used are only available to MAC (with graphics) and Linux (headless version, for faster training). To download the Linux version with graphics or the Windows versions, please use the links below (provided by Udacitys Nanodeegre):
+
+* Linux: click [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Linux.zip)
+* Windows (32-bit): click [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Windows_x86.zip)
+* Windows (64-bit): click [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Windows_x86_64.zip)
 
 
 
@@ -31,7 +44,28 @@ python -m ipykernel install --user --name dqn-pytorch --display-name "dqn-pytorc
 
 4. Before running code in a notebook, change the kernel to match the `dqn-pytorch` environment by using the drop-down `Kernel` menu. 
 
+# Unity ML-Agents Environment
+
+The environment consists of a robot surround by a boxed enclosure filled with yellow and blue bananas At each time step, it has four actions at its disposal:
+- `0` - walk forward 
+- `1` - walk backward
+- `2` - turn left
+- `3` - turn right
+
+The state-space has `37` dimensions and contains the agent's velocity, along with ray-based perception of objects around agent's forward direction.  A reward of `+1` is provided for collecting a yellow banana, and a reward of `-1` is provided for collecting a blue banana. 
+
 # Training and Playing
+
+To get started with the code, the first step is to load the Unity-ML agents environment. It is important to note
+
+```python
+from unityagents import UnityEnvironment
+
+env = UnityEnvironment(file_name="Environments/Banana.app")
+brain_name = env.brain_names[0]
+brain = env.brains[brain_name]
+```
+
 
 ```python
 from dqn import PriorAgent, PTraining
@@ -96,21 +130,6 @@ The available models and corresponding classes are:
         from dqn.prioritized import PriorAgent, PTraining
     ```
 
-# Unity ML-Agents Environment
-
-The environment consists of a robot surround by a boxed enclosure filled with yellow and blue bananas At each time step, it has four actions at its disposal:
-- `0` - walk forward 
-- `1` - walk backward
-- `2` - turn left
-- `3` - turn right
-
-The state-space has `37` dimensions and contains the agent's velocity, along with ray-based perception of objects around agent's forward direction.  A reward of `+1` is provided for collecting a yellow banana, and a reward of `-1` is provided for collecting a blue banana. 
-
-
-
-
-
-For training and playing instructions, please refer to the Tutorial [notebook](./Tutorial.ipynb).
 # Results
 
 The 4 models implemented have trained versions saved in the models folder. Those models are named as:
@@ -131,3 +150,16 @@ agent.load_weights('final.pth')
 ```
 
 For further details of implementation and the results of training, please refer to the Report file [here](./Report.md).
+
+# References
+
+
+ 
+[1] [Deep Reinforcement Learning with Double Q-learning](http://arxiv.org/abs/1509.06461)
+
+[2] [Deep Reinforcement Learning with Double Q-learning](https://arxiv.org/abs/1509.06461)
+
+[3] [Dueling Network Architectures for Deep Reinforcement Learning](http://arxiv.org/abs/1511.06581)
+
+[4] [Prioritized Experience Replay](http://arxiv.org/abs/1511.05952)  
+ 
