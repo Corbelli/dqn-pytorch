@@ -126,7 +126,7 @@ The folder system in the code is structured as:
 
 * images - Saved images of results
 
-* Tutorial.ipynb - Jupyter Notebook with code samples
+* Navigation.ipynb - Jupyter Notebook with code samples
 
 # DQN library
 
