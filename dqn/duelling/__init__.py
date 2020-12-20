@@ -1,1 +1,2 @@
-from .dddqn_agent import DDDQNAgent
+from .agent import DDDQNAgent
+from .training import DuelTraining

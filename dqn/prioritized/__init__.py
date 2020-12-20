@@ -1,2 +1,2 @@
-from .prior_agent import PriorAgent
-from .training_prior import PTraining
+from .agent import PriorAgent
+from .training import PTraining

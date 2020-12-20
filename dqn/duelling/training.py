@@ -2,9 +2,9 @@ import time
 import plotly.graph_objects as go
 from IPython.display import clear_output
 
-from .utils import last_rolling_mean
+from ..utils import last_rolling_mean
 
-class Training():
+class DuelTraining():
 
     def __init__(self, n_episodes=2000, eps_start=1.0, eps_end=0.01, eps_decay=0.995, max_t=1000):
         self.n_episodes = n_episodes

@@ -1,1 +1,2 @@
-from .ddqn_agent import DDQNAgent
+from .agent import DDQNAgent
+from .training import DoubleTraining

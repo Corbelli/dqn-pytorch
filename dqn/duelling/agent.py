@@ -2,7 +2,7 @@ import numpy as np
 import random
 from collections import namedtuple, deque
 
-from .prioritized_model import DuelQNetwork
+from .model import DuelQNetwork
 
 import torch
 import torch.nn.functional as F
@@ -13,13 +13,11 @@ BATCH_SIZE = 64         # minibatch size
 GAMMA = 0.99            # discount factor
 TAU = 1e-3              # for soft update of target parameters
 LR = 5e-4               # learning rate 
-EPS = 0.01              # constant used to stabilize the experience sampling
 UPDATE_EVERY = 4        # how often to update the network
-ALPHA = 0.6
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-class PriorAgent():
+class DDDQNAgent():
     """Interacts with and learns from the environment."""
 
     def __init__(self, state_size, action_size, seed, random_policy=False):
@@ -52,7 +50,7 @@ class PriorAgent():
     def save_weights(self, model_weights):
         torch.save(self.qnetwork_local.state_dict(), 'models/{}'.format(model_weights))
 
-    def step(self, state, action, reward, next_state, done, beta):
+    def step(self, state, action, reward, next_state, done):
         # Save experience in replay memory
         if self.random:
             return
@@ -64,7 +62,7 @@ class PriorAgent():
             # If enough samples are available in memory, get random subset and learn
             if len(self.memory) > BATCH_SIZE:
                 experiences = self.memory.sample()
-                self.learn(experiences, GAMMA, beta)
+                self.learn(experiences, GAMMA)
 
     def act(self, state, eps=0.):
         """Returns actions for given state as per current policy.
@@ -88,31 +86,20 @@ class PriorAgent():
             return random.choice(np.arange(self.action_size))
 
 
-    def learn(self, experiences, gamma, beta):
+    def learn(self, experiences, gamma):
         """Update value parameters using given batch of experience tuples.
 
         Params
         ======
             experiences (Tuple[torch.Tensor]): tuple of (s, a, r, s', done) tuples 
             gamma (float): discount factor
-            beta (float): importance sampling factor
         """
-        states, actions, rewards, next_states, probabilites, experiences_idx, dones = experiences
-
-        is_weights = np.power(probabilites*BATCH_SIZE, -beta)
-        is_weights = torch.from_numpy(is_weights/np.max(is_weights)).float().to(device)
-
+        states, actions, rewards, next_states, dones = experiences
         current_qs = self.qnetwork_local(states).gather(1, actions)
         next_actions = self.qnetwork_local(next_states).detach().max(1)[1].unsqueeze(1)
         max_next_qs = self.qnetwork_target(next_states).detach().gather(1, next_actions)
         target_qs = rewards + GAMMA*max_next_qs
-
-        # loss = F.smooth_l1_loss(current_qs, target_qs)
-        loss = (target_qs - current_qs).pow(2) * is_weights
-        loss = loss.mean()
-
-        td_errors = (target_qs - current_qs).detach().numpy()
-        self.memory.update_priorities(experiences_idx, np.abs(td_errors))
+        loss = F.smooth_l1_loss(current_qs, target_qs)
         
         self.qnetwork_local.zero_grad()
         loss.backward()
@@ -150,40 +137,25 @@ class ReplayBuffer:
         self.action_size = action_size
         self.memory = deque(maxlen=buffer_size)  
         self.batch_size = batch_size
-        self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "td_error","done"])
+        self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done"])
         self.seed = random.seed(seed)
-        self.max_priority = 1
     
     def add(self, state, action, reward, next_state, done):
         """Add a new experience to memory."""
-        e = self.experience(state, action, reward, next_state, self.max_priority, done)
+        e = self.experience(state, action, reward, next_state, done)
         self.memory.append(e)
-
-    def update_priorities(self, experiences_idx, td_errors):
-        for error, idx in zip(td_errors, experiences_idx):
-            mem = self.memory[idx]
-            self.memory[idx] = self.experience(mem.state, mem.action, mem.reward,
-                                               mem.next_state, error[0], mem.done)
     
     def sample(self):
         """Randomly sample a batch of experiences from memory."""
-        probabilities = self.probs(np.array([e.td_error for e in self.memory]))
-        experiences_idx = np.random.choice(len(self.memory), size=self.batch_size, p=probabilities)
-        experiences =  [self.memory[idx] for idx in experiences_idx]
+        experiences = random.sample(self.memory, k=self.batch_size)
 
         states = torch.from_numpy(np.vstack([e.state for e in experiences if e is not None])).float().to(device)
         actions = torch.from_numpy(np.vstack([e.action for e in experiences if e is not None])).long().to(device)
         rewards = torch.from_numpy(np.vstack([e.reward for e in experiences if e is not None])).float().to(device)
         next_states = torch.from_numpy(np.vstack([e.next_state for e in experiences if e is not None])).float().to(device)
-        probabilities = self.probs([e.td_error for e in experiences if e is not None])
         dones = torch.from_numpy(np.vstack([e.done for e in experiences if e is not None]).astype(np.uint8)).float().to(device)
   
-        return (states, actions, rewards, next_states, probabilities, experiences_idx, dones)
-
-    def probs(self, priorities):
-        self.max_priority = np.max(priorities)
-        probabilities = np.power(np.array(priorities) + EPS, ALPHA)
-        return probabilities/np.sum(probabilities)
+        return (states, actions, rewards, next_states, dones)
 
     def __len__(self):
         """Return the current size of internal memory."""

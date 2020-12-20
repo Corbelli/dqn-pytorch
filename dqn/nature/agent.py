@@ -2,7 +2,7 @@ import numpy as np
 import random
 from collections import namedtuple, deque
 
-from .duel_model import DuelQNetwork
+from .model import QNetwork
 
 import torch
 import torch.nn.functional as F
@@ -17,7 +17,7 @@ UPDATE_EVERY = 4        # how often to update the network
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-class DDDQNAgent():
+class DQNAgent():
     """Interacts with and learns from the environment."""
 
     def __init__(self, state_size, action_size, seed, random_policy=False):
@@ -35,8 +35,8 @@ class DDDQNAgent():
         self.seed = random.seed(seed)
 
         # Q-Network
-        self.qnetwork_local = DuelQNetwork(state_size, action_size, seed).to(device)
-        self.qnetwork_target = DuelQNetwork(state_size, action_size, seed).to(device)
+        self.qnetwork_local = QNetwork(state_size, action_size, seed).to(device)
+        self.qnetwork_target = QNetwork(state_size, action_size, seed).to(device)
         self.optimizer = optim.Adam(self.qnetwork_local.parameters(), lr=LR)
 
         # Replay memory
@@ -95,12 +95,11 @@ class DDDQNAgent():
             gamma (float): discount factor
         """
         states, actions, rewards, next_states, dones = experiences
-        current_qs = self.qnetwork_local(states).gather(1, actions)
-        next_actions = self.qnetwork_local(next_states).detach().max(1)[1].unsqueeze(1)
-        max_next_qs = self.qnetwork_target(next_states).detach().gather(1, next_actions)
-        target_qs = rewards + GAMMA*max_next_qs
-        loss = F.smooth_l1_loss(current_qs, target_qs)
-        
+        current = self.qnetwork_local(states).gather(1, actions)
+        next_qvalues = self.qnetwork_target(next_states).max(1)[0].detach().unsqueeze(1)
+        targets = rewards + GAMMA*(next_qvalues*(1 - dones))
+        loss = F.smooth_l1_loss(current, targets)
+
         self.qnetwork_local.zero_grad()
         loss.backward()
         self.optimizer.step()
