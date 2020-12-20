@@ -61,7 +61,7 @@ To get started with the code, the first step is to load the Unity-ML agent's env
 ```python
 from unityagents import UnityEnvironment
 
-env = UnityEnvironment(file_name="Environments/Banana.app")
+env = UnityEnvironment(file_name="environments/Banana.app")
 brain_name = env.brain_names[0]
 brain = env.brains[brain_name]
 ```
