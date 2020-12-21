@@ -6,7 +6,7 @@ This project is a Pytorch implementation of several variants of the Deep Q Learn
 
 # Sumary
 
-The code structure builds from the Nature DQN, and incrementally implements 3 modifications, in order: Double Q Learning, Duelling Networks and Prioritized Experience Replay. The articles for each one of these implementations can be found at
+The code structure builds from the Nature DQN, and incrementally implements 3 modifications, in order: Double Q Learning, Dueling Networks and Prioritized Experience Replay. The articles for each one of these implementations can be found at
 
 - DQN [[1]](#references)
 - Double DQN [[2]](#references)
@@ -100,7 +100,7 @@ Once the scores is saved, you can save the training with a name and description 
 from dqn import  Benchmarks
 
 benchs = Benchmarks()
-benchs.save_score('Final Prioritized Replay', scores, 'Prioritized replay implementation, with duelling model and Double DQN, the impletation trained for 2000 episodes'))
+benchs.save_score('Final Prioritized Replay', scores, 'Prioritized replay implementation, with dueling model and Double DQN, the impletation trained for 2000 episodes'))
 ```
 To check all available saved trainings, check the [Benchmarks](#benchmarks) section. To see a trained model play, just load the weights for the agent with the load_weights function, and use the play function of the training class.
 
@@ -170,10 +170,10 @@ Training using the other implemented models is very similar to the instructions 
     scores = training_setup.train(agent, env, brain_name, track_every=10, plot=True, weights='ddqn.pth', success_thresh=13.0)
     ```
 
-* Duelling DQN \
+* Dueling DQN \
     DQN with modification to implement double q learning and a dueling network architecture
     ```python
-    from dqn.duelling import DDDQNAgent, DuelTraining
+    from dqn.dueling import DDDQNAgent, DuelTraining
 
     agent = DDDQNAgent(state_size=37, action_size=4, seed=0)
     training_setup = DuelTraining(n_episodes=2000, eps_start=1, eps_end=0.01, eps_decay=0.995)
@@ -196,7 +196,7 @@ The 4 models implemented have trained versions saved in the models folder. Those
 
 * Nature DQN [[1]](#references) -> dqn.pth
 * Double DQN [[2]](#references) -> ddqn.pth
-* Duelling Double DQN [[3]](#references) -> dddqn.pth
+* Dueling Double DQN [[3]](#references) -> dddqn.pth
 * Prioritezed Replay DQN [[4]](#references) -> priordqn.pth
 * Prioritezed Replay trained through 2000 steps -> final.pth
 * Untraind Prioritized Replay DQN -> untrained.pth

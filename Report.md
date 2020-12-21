@@ -1,6 +1,6 @@
 # DQN Implementation Report
 
-This report describes the implementation present here of a DQN agent with Double Q Learning, Duelling Network Architecture and Prioritized Experience Replay.
+This report describes the implementation present here of a DQN agent with Double Q Learning, Dueling Network Architecture and Prioritized Experience Replay.
 
 # The Neural Network Model
 
